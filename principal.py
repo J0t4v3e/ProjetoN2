@@ -1,25 +1,40 @@
-import cv2
-import sys
+#importing required libraries
+from skimage.io import imread, imsave
+from skimage.transform import resize
+from skimage.feature import hog
+from skimage import exposure, color
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Inicializa o descritor HOG e define o detector de pessoas padrão
-hog = cv2.HOGDescriptor()
-hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+# reading the image
+img = imread('cat.jpg')
+plt.axis("off")
+plt.imshow(img)
+plt.show()
+print(img.shape)
 
-# Carrega a imagem com caminho absoluto
-image = cv2.imread('C:/Users/natan/.spyder-py3/casal.jpeg')
-if image is None:
-    print("Erro: A imagem não foi carregada corretamente.")
-    sys.exit()
+resized_img = resize(img, (128 * 4, 64 * 4))
+plt.axis("off")
+plt.imshow(resized_img)
+plt.show()
+print(resized_img.shape)
 
-# Detecta pessoas na imagem
-(rects, weights) = hog.detectMultiScale(image, winStride=(4, 4),
-                                        padding=(8, 8), scale=1.05)
+# Convert to grayscale if the image is colored
+gray_img = color.rgb2gray(resized_img)
 
-# Desenha retângulos ao redor das pessoas detectadas
-for (x, y, w, h) in rects:
-    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+# creating hog features
+fd, hog_image = hog(gray_img, orientations=9, pixels_per_cell=(8, 8),
+                    cells_per_block=(2, 2), visualize=True)
 
-# Exibe a imagem resultante
-cv2.imshow("Detecções", image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Normalizing images to uint8
+resized_img_uint8 = (resized_img * 255).astype(np.uint8)
+hog_image_uint8 = (hog_image * 255).astype(np.uint8)
+
+# Displaying the HOG image
+plt.axis("off")
+plt.imshow(hog_image_uint8, cmap="gray")
+plt.show()
+
+# saving images
+imsave("resized_img.jpg", resized_img_uint8)
+imsave("hog_image.jpg", hog_image_uint8, cmap="gray")
