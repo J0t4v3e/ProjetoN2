@@ -8,7 +8,7 @@ from engine import reconhece_face, get_rostos
 inicio = time.time()
 
 # Carrega a imagem
-imagem_desconhecida = fr.load_image_file("./img/desconhecido.png")
+imagem_desconhecida = fr.load_image_file("./img/faculdade.png")
 imagem_desconhecida_bgr = cv2.cvtColor(imagem_desconhecida, cv2.COLOR_RGB2BGR)
 
 # Detecta rostos na imagem
@@ -40,8 +40,23 @@ else:
     fim = time.time()
     duracao = fim - inicio
     print(f"\nTempo total de reconhecimento: {duracao:.2f} segundos")
-    
+
+    # Redimensiona a imagem para caber na tela (máx: 1280px de largura)
+    largura_maxima = 1280
+    altura_maxima = 720
+
+    altura, largura = imagem_desconhecida_bgr.shape[:2]
+
+    escala_largura = largura_maxima / largura
+    escala_altura = altura_maxima / altura
+    escala = min(escala_largura, escala_altura, 1.0)  # Não aumenta, só reduz
+
+    nova_largura = int(largura * escala)
+    nova_altura = int(altura * escala)
+
+    imagem_redimensionada = cv2.resize(imagem_desconhecida_bgr, (nova_largura, nova_altura))
+
     # Exibe pop-up com os rostos
-    cv2.imshow("Reconhecimento Facial", imagem_desconhecida_bgr)
+    cv2.imshow("Reconhecimento Facial", imagem_redimensionada)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
