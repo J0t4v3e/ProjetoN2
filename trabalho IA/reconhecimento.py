@@ -8,7 +8,7 @@ from engine import reconhece_face, get_rostos
 inicio = time.time()
 
 # Carrega imagem
-imagem_rgb = fr.load_image_file("./img/oculos3.jpg")
+imagem_rgb = fr.load_image_file("./img/michael_anos.png")
 imagem_bgr = cv2.cvtColor(imagem_rgb, cv2.COLOR_RGB2BGR)
 
 # Detecta rostos com MTCNN (visualização lateral)
@@ -25,7 +25,7 @@ else:
         x, y = max(0, x), max(0, y)
         top, right, bottom, left = y, x + largura, y + altura, x
 
-        # Gera a codificação para esse rosto
+        # Gera codificação para o rosto
         face_encoding = fr.face_encodings(imagem_rgb, [(top, right, bottom, left)])
         if not face_encoding:
             continue
@@ -40,9 +40,27 @@ else:
                 print("Rosto do", nome, "foi reconhecido")
                 break
 
-        # Desenha caixa e nomes
+        # Faz a estimetiva da direção do rosto
+        keypoints = det['keypoints']
+        olho_esquerdo = keypoints['left_eye']
+        olho_direito = keypoints['right_eye']
+        nariz = keypoints['nose']
+
+        media_olhos_x = (olho_esquerdo[0] + olho_direito[0]) / 2
+
+        if abs(nariz[0] - media_olhos_x) < 5:
+            direcao = "Frente"
+        elif nariz[0] < media_olhos_x:
+            direcao = "Direita"
+        else:
+            direcao = "Esquerda"
+
+        print(f"Direção do rosto detectado: {direcao}")
+
+        # Desenha caixa e texto com o nome
+        texto = f"{nome}"
         cv2.rectangle(imagem_bgr, (left, top), (right, bottom), (0, 255, 0), 2)
-        cv2.putText(imagem_bgr, nome, (left, top - 10),
+        cv2.putText(imagem_bgr, texto, (left, top - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
     # Mostra o tempo de execução do programa
