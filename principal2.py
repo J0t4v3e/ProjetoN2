@@ -1,3 +1,5 @@
+#LINK DE ESTUDO PARA IDENTIFICAR IMAGENS ESCURAS https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html
+
 import dlib
 import cv2
 import matplotlib.pyplot as plt
@@ -13,7 +15,7 @@ if image is None:
 
 # processando a imagem
 image = cv2.convertScaleAbs(image, alpha=1.2, beta=30)#ajustando o brilho
-image = cv2.GaussianBlur(image, (5, 5), 0)#aplicando efeito gaussiano
+image = cv2.GaussianBlur(image, (5, 5), 0)#aplicando efeito gaussiano (AUMENTAR O CONTRASTE)
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)#ajustando a escala de cinza
 
 #detector de rostos frontais com HOG da bibliteca dlib
